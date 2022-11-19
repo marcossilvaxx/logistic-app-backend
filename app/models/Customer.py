@@ -1,4 +1,7 @@
 from app import db, ma
+from marshmallow import fields
+
+from app.models.Company import CompanySchema
 
 class Customer(db.Model):
     __tablename__ = 'customers'
@@ -9,7 +12,7 @@ class Customer(db.Model):
     company_id = db.Column('company_id', db.ForeignKey("companies.id"))
     credit_cards = db.Column('credit_cards', db.String(255), nullable=True)
     
-    company = db.relationship("Company")
+    company = db.relationship("Company", single_parent=True, backref=db.backref('customers', lazy='joined'))
 
     def __init__(self, id, login, password, name, company_id, credit_cards):
         if not(id and login and password and name):
@@ -26,6 +29,7 @@ class Customer(db.Model):
     
 
 class CustomerSchema(ma.SQLAlchemyAutoSchema):
+    company = fields.Nested(CompanySchema, many=False)
     class Meta:
         model = Customer
 

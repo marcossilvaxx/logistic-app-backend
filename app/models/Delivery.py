@@ -5,8 +5,6 @@ class Delivery(db.Model):
     id = db.Column('id', db.Integer, primary_key=True, autoincrement=True)
     delivered_quantity = db.Column('delivered_quantity', db.Integer, nullable=False)
     order_item_id = db.Column('order_item_id', db.ForeignKey("order_items.id"))
-    
-    order_item = db.relationship("OrderItem")
 
     def __init__(self, delivered_quantity):
         if not(delivered_quantity):

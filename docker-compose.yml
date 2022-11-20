@@ -12,6 +12,7 @@ services:
     restart: unless-stopped
     networks:
       - api_db
+    command: bash -c "cd app/settings/ && sleep 15 && python run_db_migration.py database_init.sql && python run_db_seed.py && cd ../../ && python run.py"
     depends_on:
       - db
     env_file:

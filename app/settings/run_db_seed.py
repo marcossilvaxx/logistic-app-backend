@@ -16,41 +16,47 @@ def insert_row(cursor, table, columns, data):
   
   cursor.execute(query, parse_csv_row(data))
 
-try:
-  conn = p.connect(
-    user = config.POSTGRES_USER,
-    password = config.POSTGRES_PASSWORD,
-    host = config.POSTGRES_HOST,
-    port = config.POSTGRES_PORT,
-    database = config.POSTGRES_DB,
-  )
+def run():
+  conn = None
+  
+  try:
+    conn = p.connect(
+      user = config.POSTGRES_USER,
+      password = config.POSTGRES_PASSWORD,
+      host = config.POSTGRES_HOST,
+      port = config.POSTGRES_PORT,
+      database = config.POSTGRES_DB,
+    )
 
-  cursor = conn.cursor()
-  
-  seed_files = ["companies.csv", "customers.csv", "orders.csv", "order_items.csv", "deliveries.csv"]
-  
-  for seed_file in seed_files:
-    tablename = seed_file.split(".")[0]
+    cursor = conn.cursor()
     
-    columns = []
+    seed_files = ["companies.csv", "customers.csv", "orders.csv", "order_items.csv", "deliveries.csv"]
     
-    with open(f"seed_data/{seed_file}") as file:
-      csvFile = csv.reader(file)
-  
-      for i, lines in enumerate(csvFile):
-        if i == 0:
-          columns = lines
-        else:
-          insert_row(cursor, tablename, columns, lines)
-      print(f"{tablename} table loaded\n")
-  
-  conn.commit()
+    for seed_file in seed_files:
+      tablename = seed_file.split(".")[0]
+      
+      columns = []
+      
+      with open(f"seed_data/{seed_file}") as file:
+        csvFile = csv.reader(file)
+    
+        for i, lines in enumerate(csvFile):
+          if i == 0:
+            columns = lines
+          else:
+            insert_row(cursor, tablename, columns, lines)
+        print(f"{tablename} table loaded\n")
+    
+    conn.commit()
 
-except p.Error as error:
-  print(f'There was an error with the database operation: {error}')
-except Exception as error:
-  print(f'There was an unexpected error {error}')
-finally:
-  if conn:
-    cursor.close()
-    conn.close()
+  except p.Error as error:
+    print(f'Seed - There was an error with the database operation: {error}')
+  except Exception as error:
+    print(f'Seed - There was an unexpected error {error}')
+  finally:
+    if conn:
+      cursor.close()
+      conn.close()
+      
+if __name__ == "__main__":
+  run()

@@ -8,4 +8,4 @@ COPY . /app
 
 RUN pip install -r requirements.txt
 
-CMD python run.py
+CMD cd app/settings/ && sleep 15 && python run_db_migration.py database_init.sql && python run_db_seed.py && cd ../../ && python run.py
